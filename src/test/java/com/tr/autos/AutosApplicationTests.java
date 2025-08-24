@@ -1,10 +1,10 @@
-package com.zefa.stock_auto_trade;
+package com.tr.autos;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class StockAutoTradeApplicationTests {
+class AutosApplicationTests {
 
 	@Test
 	void contextLoads() {
