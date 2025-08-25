@@ -1,0 +1,22 @@
+spring:
+  profiles:
+    default: local
+  jackson:
+    time-zone: Asia/Seoul
+
+  datasource:
+    url: jdbc:mysql://localhost:3307/auto_trading?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: autos
+    password: autos_pw
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    url: jdbc:mysql://localhost:3307/auto_trading?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    user: autos
+    password: autos_pw
