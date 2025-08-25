@@ -19,3 +19,6 @@ gradle-app.setting
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+
+# 도커 하위 파일 업로드 방지
+.docker/
