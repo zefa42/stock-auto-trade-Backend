@@ -1,6 +1,8 @@
 package com.tr.autos.auth.service;
 
+import com.tr.autos.auth.dto.request.LoginRequestDto;
 import com.tr.autos.auth.dto.request.SignupRequestDto;
+import com.tr.autos.auth.dto.response.LoginResponseDto;
 import com.tr.autos.auth.dto.response.SignupResponseDto;
 import com.tr.autos.domain.user.User;
 import com.tr.autos.domain.user.repository.UserRepository;
@@ -15,6 +17,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // 회원가입 로직
     @Transactional
     public SignupResponseDto signup(SignupRequestDto signupRequestDto) {
         // 이메일 중복 확인
@@ -35,5 +38,25 @@ public class AuthService {
 
         // 반환
         return new SignupResponseDto(user.getEmail(), user.getName());
+    }
+
+    // 로그인 로직
+    @Transactional(readOnly = true)
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+        // 이메일 검증
+        User user = userRepository.findByEmail(loginRequestDto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+
+        // 비밀번호 검증
+        if(!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPasswordHash())) {
+            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+        }
+
+        // 토큰 발급(추후 코드 변경)
+        String accessToken = "";
+        String refreshToken = "";
+
+        // 반환
+        return new LoginResponseDto(user.getEmail(), user.getName(), accessToken, refreshToken);
     }
 }
