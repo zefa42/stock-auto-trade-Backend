@@ -22,3 +22,7 @@ gradle-app.setting
 
 # 도커 하위 파일 업로드 방지
 .docker/
+
+# 인텔리제이 설정 업로드 방지
+/.idea
+.idea
