@@ -34,8 +34,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (JwtException e) {
                 // 토큰 불일치/만료 → 401
                 SecurityContextHolder.clearContext();
-                res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 토큰입니다.");
-                return;
+                //res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 토큰입니다."); // 제거
+                req.setAttribute("authError", "만료되었거나 유효하지 않은 토큰입니다."); // 이유 전달
+                // 인증 없이 진행 -> Security가 보호 자원에서 EntryPoint를 호출해 401 JSON 응답
             }
         }
         fc.doFilter(req, res);
