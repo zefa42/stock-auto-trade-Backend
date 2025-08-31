@@ -22,6 +22,6 @@ spring:
     password: autos_pw
 
 jwt:
-  secret: "1v8p2b8mWwzCqY4zq0m3m4l8z3A1t6p0X9QbG3aP5YQfR1UZt3mJg=="
+  secret: 'b9IH2UxOIQgFl0ojWL63Gg9ztWt7T/gIeYV/hTSvFPw=' # 랜덤 문자열
   access-token-valid-seconds: 900       # 15분
   refresh-token-valid-seconds: 1209600  # 14일

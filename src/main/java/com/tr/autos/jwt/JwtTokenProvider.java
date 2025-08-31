@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,8 +26,9 @@ public class JwtTokenProvider {
     @Value("${jwt.refresh-token-valid-seconds}") private long refreshTtl;
 
     private Key key() {
-        return Keys.hmacShaKeyFor(
-                secret.getBytes(StandardCharsets.UTF_8));
+        // secret는 Base64 문자열. 먼저 디코드해서 바이트 배열로 만든 뒤 키 생성
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String createAccessToken(String email, String name) {
