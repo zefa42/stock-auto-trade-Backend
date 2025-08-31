@@ -25,3 +25,5 @@ jwt:
   secret: 'b9IH2UxOIQgFl0ojWL63Gg9ztWt7T/gIeYV/hTSvFPw=' # 랜덤 문자열
   access-token-valid-seconds: 900       # 15분
   refresh-token-valid-seconds: 1209600  # 14일
+  issuer: 'autos-api'
+  audience: 'autos-client'
