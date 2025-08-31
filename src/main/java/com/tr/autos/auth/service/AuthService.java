@@ -6,6 +6,7 @@ import com.tr.autos.auth.dto.response.LoginResponseDto;
 import com.tr.autos.auth.dto.response.SignupResponseDto;
 import com.tr.autos.domain.user.User;
 import com.tr.autos.domain.user.repository.UserRepository;
+import com.tr.autos.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 회원가입 로직
     @Transactional
@@ -53,8 +55,8 @@ public class AuthService {
         }
 
         // 토큰 발급(추후 코드 변경)
-        String accessToken = "";
-        String refreshToken = "";
+        String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getName());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
 
         // 반환
         return new LoginResponseDto(user.getEmail(), user.getName(), accessToken, refreshToken);
