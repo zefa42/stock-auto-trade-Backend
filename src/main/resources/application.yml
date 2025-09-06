@@ -20,6 +20,12 @@ spring:
     url: jdbc:mysql://localhost:3307/auto_trading?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
     user: autos
     password: autos_pw
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      username: default        # Redis 6+ ACL 기본 사용자명
+      password: autos_redis_pw # 설정한 requirepass 값
 
 jwt:
   secret: 'b9IH2UxOIQgFl0ojWL63Gg9ztWt7T/gIeYV/hTSvFPw=' # 랜덤 문자열

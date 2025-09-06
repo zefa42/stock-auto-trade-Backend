@@ -48,12 +48,13 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String createRefreshToken(String email) {
+    public String createRefreshToken(String email, String jti) {
         Instant now = Instant.now();
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setSubject(email)
                 .claim("typ", "refresh")        // ★ refresh 구분
+                .claim("jti", jti)
                 .setIssuer(issuer)
                 .setAudience(audience)
                 .setIssuedAt(Date.from(now))
@@ -77,5 +78,10 @@ public class JwtTokenProvider {
             throw new io.jsonwebtoken.JwtException("유효하지 않은 iss/aud");
         }
         return jws;
+    }
+
+    // Redis TTL 설정에 사용
+    public long refreshTtlSeconds() {
+        return refreshTtl;
     }
 }

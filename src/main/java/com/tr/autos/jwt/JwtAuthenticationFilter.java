@@ -27,6 +27,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = header.substring(7);
             try {
                 var claims = jwtTokenProvider.parse(token).getBody();
+
+                Object typ = claims.get("typ");
+                if (!"access".equals(typ)) {
+                    // access 토큰이 아니면 인증 세팅하지 않고 다음 필터로 넘김
+                    fc.doFilter(req, res);
+                    return;
+                }
+
                 String email = claims.getSubject();
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(email, null, List.of());
