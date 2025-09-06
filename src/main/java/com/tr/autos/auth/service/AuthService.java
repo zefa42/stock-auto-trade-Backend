@@ -12,12 +12,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.redis.core.StringRedisTemplate;
+import java.time.Duration;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final StringRedisTemplate stringRedisTemplate;
 
     // 회원가입 로직
     @Transactional
@@ -54,9 +59,18 @@ public class AuthService {
             throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
         }
 
+        // 로그인 성공 후 토큰 발급 부분 교체
+        String jti = UUID.randomUUID().toString();
+
         // 토큰 발급(추후 코드 변경)
         String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getName());
-        String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail(), jti);
+
+        // Redis 에 jti 저장 (key: rt:{userId}, TTL: refresh 만료와 동일)
+        String redisKey = "rt:" + user.getId(); // userId 없으면 rt:{email}로 바꿔도 됨
+        stringRedisTemplate
+                .opsForValue()
+                .set(redisKey, jti, Duration.ofSeconds(jwtTokenProvider.refreshTtlSeconds()));
 
         // 반환
         return new LoginResponseDto(user.getEmail(), user.getName(), accessToken, refreshToken);
