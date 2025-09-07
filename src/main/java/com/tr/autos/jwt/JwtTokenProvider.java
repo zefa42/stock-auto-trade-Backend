@@ -33,15 +33,17 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createAccessToken(String email, String name) {
+    /** ★ jti 포함 Access 토큰 생성 */
+    public String createAccessToken(String email, String name, String jti) {
         Instant now = Instant.now();
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setSubject(email)
                 .claim("name", name)
-                .claim("typ", "access")         // ★ access 구분
-                .setIssuer(issuer)                          // ★ 발급자
-                .setAudience(audience)                      // ★ 대상
+                .claim("typ", "access")
+                .claim("jti", jti)
+                .setIssuer(issuer)
+                .setAudience(audience)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plusSeconds(accessTtl)))
                 .signWith(key(), SignatureAlgorithm.HS256)

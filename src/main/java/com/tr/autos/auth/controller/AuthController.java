@@ -41,22 +41,47 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
+    // logout 교체  (Access/Refresh 모두 헤더로 받음)
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestHeader(value="Authorization", required=false) String bearer) {
-        if (bearer == null || !bearer.startsWith("Bearer ")) {
+    public ResponseEntity<Void> logout(
+            @RequestHeader(value="Authorization", required=false) String accessBearer,
+            @RequestHeader(value="X-Refresh-Token", required=false) String refreshBearer) {
+
+        if (accessBearer == null || !accessBearer.startsWith("Bearer ")
+                || refreshBearer == null || !refreshBearer.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        var refreshToken = bearer.substring(7);
+
+        String accessToken = accessBearer.substring(7);
+        String refreshToken = refreshBearer.substring(7);
+
         try {
-            var claims = jwtTokenProvider.parse(refreshToken).getBody();
-            if (!"refresh".equals(claims.get("typ"))) {
+            // Access 파싱
+            var aClaims = jwtTokenProvider.parse(accessToken).getBody();
+            if (!"access".equals(aClaims.get("typ"))) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
-            String email = claims.getSubject();
+            String accessJti = String.valueOf(aClaims.get("jti"));
+            long accessTtlSec = (aClaims.getExpiration().getTime() - System.currentTimeMillis()) / 1000;
+
+            // Refresh 파싱
+            var rClaims = jwtTokenProvider.parse(refreshToken).getBody();
+            if (!"refresh".equals(rClaims.get("typ"))) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            String email = rClaims.getSubject();
             var user = userRepository.findByEmail(email).orElseThrow();
 
-            String redisKey = "rt:" + user.getId();
-            stringRedisTemplate.delete(redisKey);
+            // RT 무효화
+            String rtKey = "rt:" + user.getId();
+            stringRedisTemplate.delete(rtKey);
+
+            // ★ Access 블랙리스트 등록 (남은 만료 시간만큼 TTL)
+            if (accessTtlSec > 0) {
+                String blKey = "bl:a:" + accessJti;
+                stringRedisTemplate.opsForValue()
+                        .set(blKey, "1", Duration.ofSeconds(accessTtlSec));
+            }
 
             return ResponseEntity.noContent().build();
         } catch (io.jsonwebtoken.JwtException e) {
@@ -92,14 +117,15 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
 
-            // 5) 회전(rotate): 새 jti 발급 & Redis 갱신
-            String newJti = UUID.randomUUID().toString();
+            // ★ 회전: 새 RT jti 저장
+            String newRefreshJti = UUID.randomUUID().toString();
             stringRedisTemplate.opsForValue()
-                    .set(redisKey, newJti, Duration.ofSeconds(jwtTokenProvider.refreshTtlSeconds()));
+                    .set(redisKey, newRefreshJti, Duration.ofSeconds(jwtTokenProvider.refreshTtlSeconds()));
 
-            // 6) 새 토큰들 발급
-            String newAccess = jwtTokenProvider.createAccessToken(user.getEmail(), user.getName());
-            String newRefresh = jwtTokenProvider.createRefreshToken(email, newJti);
+            // ★ 새 Access도 jti 부여
+            String newAccessJti = UUID.randomUUID().toString();
+            String newAccess = jwtTokenProvider.createAccessToken(user.getEmail(), user.getName(), newAccessJti);
+            String newRefresh = jwtTokenProvider.createRefreshToken(email, newRefreshJti);
 
             return ResponseEntity.ok(new LoginResponseDto(email, user.getName(), newAccess, newRefresh));
         } catch (io.jsonwebtoken.JwtException e) {
