@@ -135,7 +135,7 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<Map<String, String>> me(java.security.Principal principal) {
-        if (principal == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        // 여기서 직접 401 만들지 말고, principal이 있다고 가정 (인증 필수 엔드포인트이므로)
         return ResponseEntity.ok(Map.of("email", principal.getName()));
     }
 }

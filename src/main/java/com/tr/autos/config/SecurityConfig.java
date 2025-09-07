@@ -26,7 +26,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // 회원가입, 로그인은 누구나 접근 가능
+                        .requestMatchers(
+                                "/auth/signup",
+                                "/auth/login",
+                                "/auth/refresh",
+                                "/auth/logout"
+                        ).permitAll() // 회원가입, 로그인은 누구나 접근 가능
                         .anyRequest().authenticated() // 이외에 인증 필요
                 )
                 .exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthEntryPoint)) // 등록
