@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
+    private final StringRedisTemplate stringRedisTemplate;
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain fc)
@@ -31,6 +33,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Object typ = claims.get("typ");
                 if (!"access".equals(typ)) {
                     // access 토큰이 아니면 인증 세팅하지 않고 다음 필터로 넘김
+                    fc.doFilter(req, res);
+                    return;
+                }
+
+                // ★ 블랙리스트 확인
+                String accessJti = String.valueOf(claims.get("jti"));
+                String blKey = "bl:a:" + accessJti;
+                if (stringRedisTemplate.opsForValue().get(blKey) != null) {
+                    SecurityContextHolder.clearContext();
+                    req.setAttribute("authError", "로그아웃된 토큰입니다.");
                     fc.doFilter(req, res);
                     return;
                 }
