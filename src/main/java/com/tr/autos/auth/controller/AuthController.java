@@ -124,7 +124,7 @@ public class AuthController {
 
             // ★ 새 Access도 jti 부여
             String newAccessJti = UUID.randomUUID().toString();
-            String newAccess = jwtTokenProvider.createAccessToken(user.getEmail(), user.getName(), newAccessJti, user.getRole().name());
+            String newAccess = jwtTokenProvider.createAccessToken(user.getEmail(), user.getName(), newAccessJti, user.getRole());
             String newRefresh = jwtTokenProvider.createRefreshToken(email, newRefreshJti);
 
             return ResponseEntity.ok(new LoginResponseDto(email, user.getName(), newAccess, newRefresh));
