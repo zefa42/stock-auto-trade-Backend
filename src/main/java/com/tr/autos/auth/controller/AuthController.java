@@ -127,7 +127,7 @@ public class AuthController {
             String newAccess = jwtTokenProvider.createAccessToken(user.getEmail(), user.getName(), newAccessJti, user.getRole());
             String newRefresh = jwtTokenProvider.createRefreshToken(email, newRefreshJti);
 
-            return ResponseEntity.ok(new LoginResponseDto(email, user.getName(), newAccess, newRefresh));
+            return ResponseEntity.ok(new LoginResponseDto(email, user.getName(), user.getRole().name(), newAccess, newRefresh));
         } catch (io.jsonwebtoken.JwtException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -135,7 +135,12 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<Map<String, String>> me(java.security.Principal principal) {
+        User user = userRepository.findByEmail(principal.getName()).orElseThrow();
         // 여기서 직접 401 만들지 말고, principal이 있다고 가정 (인증 필수 엔드포인트이므로)
-        return ResponseEntity.ok(Map.of("email", principal.getName()));
+        return ResponseEntity.ok(Map.of(
+                 "email", user.getEmail()
+                ,"name", user.getName()
+                ,"role", user.getRole().name()
+        ));
     }
 }

@@ -74,6 +74,6 @@ public class AuthService {
                 .set(redisKey, refreshJti, Duration.ofSeconds(jwtTokenProvider.refreshTtlSeconds()));
 
         // 반환
-        return new LoginResponseDto(user.getEmail(), user.getName(), accessToken, refreshToken);
+        return new LoginResponseDto(user.getEmail(), user.getName(), user.getRole().name(), accessToken, refreshToken);
     }
 }
