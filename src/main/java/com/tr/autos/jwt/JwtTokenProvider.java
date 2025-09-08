@@ -34,7 +34,7 @@ public class JwtTokenProvider {
     }
 
     /** ★ jti 포함 Access 토큰 생성 */
-    public String createAccessToken(String email, String name, String jti) {
+    public String createAccessToken(String email, String name, String jti, String role) {
         Instant now = Instant.now();
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
@@ -42,6 +42,7 @@ public class JwtTokenProvider {
                 .claim("name", name)
                 .claim("typ", "access")
                 .claim("jti", jti)
+                .claim("role", role)
                 .setIssuer(issuer)
                 .setAudience(audience)
                 .setIssuedAt(Date.from(now))
