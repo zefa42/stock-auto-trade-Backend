@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -48,8 +49,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
 
                 String email = claims.getSubject();
+                String role = String.valueOf(claims.get("role")); // role 추출
+
+                var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role)); // 권한 부여
                 UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(email, null, List.of());
+                        new UsernamePasswordAuthenticationToken(email, null,  authorities);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (JwtException e) {
                 // 토큰 불일치/만료 → 401
