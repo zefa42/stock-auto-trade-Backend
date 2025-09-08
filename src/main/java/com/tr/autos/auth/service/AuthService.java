@@ -64,7 +64,7 @@ public class AuthService {
         String refreshJti = UUID.randomUUID().toString();
 
         // 토큰 발급(추후 코드 변경)
-        String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getName(), accessJti);
+        String accessToken = jwtTokenProvider.createAccessToken(user.getEmail(), user.getName(), accessJti, user.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getEmail(), refreshJti);
 
         // Redis 에 jti 저장 (key: rt:{userId}, TTL: refresh 만료와 동일)
@@ -74,6 +74,6 @@ public class AuthService {
                 .set(redisKey, refreshJti, Duration.ofSeconds(jwtTokenProvider.refreshTtlSeconds()));
 
         // 반환
-        return new LoginResponseDto(user.getEmail(), user.getName(), accessToken, refreshToken);
+        return new LoginResponseDto(user.getEmail(), user.getName(), user.getRole().name(), accessToken, refreshToken);
     }
 }

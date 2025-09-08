@@ -1,6 +1,7 @@
 package com.tr.autos.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tr.autos.domain.user.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -34,7 +35,7 @@ public class JwtTokenProvider {
     }
 
     /** ★ jti 포함 Access 토큰 생성 */
-    public String createAccessToken(String email, String name, String jti) {
+    public String createAccessToken(String email, String name, String jti, Role role) {
         Instant now = Instant.now();
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
@@ -42,6 +43,7 @@ public class JwtTokenProvider {
                 .claim("name", name)
                 .claim("typ", "access")
                 .claim("jti", jti)
+                .claim("role", role.name())
                 .setIssuer(issuer)
                 .setAudience(audience)
                 .setIssuedAt(Date.from(now))

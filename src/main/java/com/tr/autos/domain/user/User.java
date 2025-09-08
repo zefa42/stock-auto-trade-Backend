@@ -5,12 +5,12 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
 @Table(name = "users")
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = PROTECTED)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,5 +31,19 @@ public class User {
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
+    }
+
+
+    // role
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false, length=20)
+    private Role role;
+
+    @Builder
+    private User(String email, String passwordHash, String name, Role role) {
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.name = name;
+        this.role = (role == null) ? Role.USER : role; // 기본값 USER
     }
 }
