@@ -32,8 +32,10 @@ public class SecurityConfig {
                                 "/auth/signup",
                                 "/auth/login",
                                 "/auth/refresh",
-                                "/auth/logout"
-                        ).permitAll() // 회원가입, 로그인은 누구나 접근 가능
+                                "/auth/logout",
+                                "/api/symbol/**"
+                        ).permitAll() // 회원가입, 로그인, 종목 검색은 누구나 접근 가능
+                        .requestMatchers("/api/watchlist/**").authenticated()
                         .anyRequest().authenticated() // 이외에 인증 필요
                 )
                 .exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthEntryPoint)) // 등록
