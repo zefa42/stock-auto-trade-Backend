@@ -6,6 +6,7 @@ import com.tr.autos.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -32,9 +33,10 @@ public class SecurityConfig {
                                 "/auth/signup",
                                 "/auth/login",
                                 "/auth/refresh",
-                                "/auth/logout",
-                                "/api/symbol/**"
+                                "/auth/logout"
                         ).permitAll() // 회원가입, 로그인, 종목 검색은 누구나 접근 가능
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/symbols/**").permitAll()
                         .requestMatchers("/api/watchlist/**").authenticated()
                         .anyRequest().authenticated() // 이외에 인증 필요
                 )
