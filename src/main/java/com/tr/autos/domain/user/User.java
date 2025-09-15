@@ -46,4 +46,8 @@ public class User {
         this.name = name;
         this.role = (role == null) ? Role.USER : role; // 기본값 USER
     }
+
+    public boolean isAdmin() {
+        return this.role == Role.ADMIN;
+    }
 }

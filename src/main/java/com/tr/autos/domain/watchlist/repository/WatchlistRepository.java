@@ -13,7 +13,8 @@ import java.util.Optional;
 public interface WatchlistRepository extends JpaRepository<Watchlist, Long> {
     List<Watchlist> findByUserOrderByCreatedAtDesc(User user);
     Optional<Watchlist> findByUserAndSymbol(User user, Symbol symbol);
-    void deleteByUserAndSymbol(User user, Symbol symbol);
+    void deleteByUserIdAndSymbolId(Long userId, Long symbolId);
+    boolean existsByUserIdAndSymbolId(Long userId, Long symbolId);
 
     // ADMIN 사용자들이 담은 종목만 distinct
     @Query("""

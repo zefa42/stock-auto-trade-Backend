@@ -1,14 +1,13 @@
 package com.tr.autos.domain.quote;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "quote_cache")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,12 +16,30 @@ import java.time.LocalDateTime;
 public class QuoteCache {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "symbol_id")
+    private Long symbolId;       // FK 심볼 id (Primary Key)
 
-    private Long symbolId;       // FK 심볼 id
-    private Double price;        // 현재가
-    private Double changeAmt;    // 전일 대비 절대값
-    private Double changeRate;   // 전일 대비 %
-    private LocalDateTime asOf;  // 시세 기준 시각
+    @Column(name = "price", precision = 18, scale = 4, nullable = false)
+    private BigDecimal price;        // 현재가
+
+    @Column(name = "change_amt", precision = 18, scale = 4, nullable = false)
+    private BigDecimal changeAmt;    // 전일 대비 절대값
+
+    @Column(name = "change_rate", precision = 9, scale = 4, nullable = false)
+    private BigDecimal changeRate;   // 전일 대비 %
+
+    @Column(name = "prev_close", precision = 18, scale = 4, nullable = false)
+    private BigDecimal prevClose;    // 전일종가
+
+    @Column(name = "as_of", nullable = false)
+    private LocalDateTime asOf;      // 시세 기준 시각
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt; // 업데이트 시각
+
+    @PrePersist
+    @PreUpdate
+    public void prePersist() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

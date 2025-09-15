@@ -14,15 +14,15 @@ public class QuoteRefreshScheduler {
     private final QuoteTargetRegistry targetRegistry;
     private final QuoteService quoteService;
 
-    // 예: KRX 장중 갱신, 필요에 맞게 크론 수정
-    @Scheduled(cron = "0 */1 9-15 ? * MON-FRI", zone = "Asia/Seoul")
-    public void refreshAdminAndExtraTargetsIntraday() {
+    // 12시 정각 갱신
+    @Scheduled(cron = "0 0 12 ? * MON-FRI", zone = "Asia/Seoul")
+    public void refreshAtNoon() {
         runOnce();
     }
 
-    // 예: 정오/마감 갱신
-    @Scheduled(cron = "0 0 12,18 ? * MON-FRI", zone = "Asia/Seoul")
-    public void refreshNoonAndClose() {
+    // 18시 30분 갱신
+    @Scheduled(cron = "0 30 18 ? * MON-FRI", zone = "Asia/Seoul")
+    public void refreshAtEvening() {
         runOnce();
     }
 
