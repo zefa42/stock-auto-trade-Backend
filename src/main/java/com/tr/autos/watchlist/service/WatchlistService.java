@@ -5,7 +5,7 @@ import com.tr.autos.domain.user.User;
 import com.tr.autos.domain.user.repository.UserRepository;
 import com.tr.autos.domain.watchlist.Watchlist;
 import com.tr.autos.watchlist.dto.WatchItemDto;
-import com.tr.autos.watchlist.repository.WatchlistRepository;
+import com.tr.autos.domain.watchlist.repository.WatchlistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
