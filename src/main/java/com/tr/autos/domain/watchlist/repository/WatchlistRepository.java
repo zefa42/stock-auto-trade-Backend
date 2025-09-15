@@ -1,4 +1,4 @@
-package com.tr.autos.watchlist.repository;
+package com.tr.autos.domain.watchlist.repository;
 
 import com.tr.autos.domain.symbol.Symbol;
 import com.tr.autos.domain.user.User;
