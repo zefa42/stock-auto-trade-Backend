@@ -33,3 +33,11 @@ jwt:
   refresh-token-valid-seconds: 1209600  # 14일
   issuer: 'autos-api'
   audience: 'autos-client'
+
+kis:
+  base-url: https://openapi.koreainvestment.com:9443
+  appkey: "PSd8X9vLrpZS7NvI31KjHYFMXWoUwe4NHsGh"
+  appsecret: "iMcHTJV3OkaWL2x74URoHGLR5X5gazUsk/YruG8aM93H09R0qxA7tUa66TUDUmkhAJ4tY0mVvfjlWQGpbWtTwu1L+n8jrOvxP2sUM2UWvL1vrkw5ouHVZwRzrjyBhInf9AuLkblD1vygWOgJnLplomDpbc68AMv2rPTcViTBqBDYa9sAB/c="
+  token:
+    redis-key: KIS:ACCESS_TOKEN         # 토큰 캐시 키
+    safety-seconds: 600                 # 만료 n초 전이면 미리 갱신(버퍼)
