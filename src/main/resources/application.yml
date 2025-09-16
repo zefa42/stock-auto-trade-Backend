@@ -41,3 +41,7 @@ kis:
   token:
     redis-key: KIS:ACCESS_TOKEN         # 토큰 캐시 키
     safety-seconds: 600                 # 만료 n초 전이면 미리 갱신(버퍼)
+
+quotes:
+  daily:
+    cron: "0 0 18 * * MON-FRI"
