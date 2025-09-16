@@ -43,6 +43,6 @@ public class QuoteCache {
     @Column(name="margin_rate") private String marginRate;
     @Column(name="market_warn_code") private String marketWarnCode;
     @Column(name="temp_halt") private Boolean tempHalt;
-    @Column(name="stac_month") private String stacMonth;
+    @Column(name = "stac_month", columnDefinition = "char(2)", length = 2) private String stacMonth;
     @Column(name="updated_at") private Timestamp updatedAt;
 }
