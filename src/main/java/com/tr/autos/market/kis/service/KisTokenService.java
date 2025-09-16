@@ -27,7 +27,7 @@ public class KisTokenService {
     @Value("${kis.token.safety-seconds}")private long SAFETY_SECONDS;
 
     /** 애플리케이션에서 KIS API 부를 때 사용 */
-    public String getAccessToken() {
+    public String getAccessTokenOrRefresh() {
         String token = redis.opsForValue().get(TOKEN_KEY);
         if (token != null && !token.isBlank()) return token;
 
