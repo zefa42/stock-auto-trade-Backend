@@ -33,7 +33,7 @@ public class KisTokenController {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> manualRefresh() {
-        String token = tokenService.getAccessToken();
+        String token = tokenService.getAccessTokenOrRefresh();
         return ResponseEntity.ok(Map.of("tokenPrefix", token.substring(0, Math.min(12, token.length())) + "..."));
     }
 }
