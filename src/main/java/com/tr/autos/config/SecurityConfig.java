@@ -2,7 +2,6 @@ package com.tr.autos.config;
 
 import com.tr.autos.jwt.JwtAuthEntryPoint;
 import com.tr.autos.jwt.JwtAuthenticationFilter;
-import com.tr.autos.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,7 +54,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/api/symbols/**").permitAll()
                         .requestMatchers("/api/watchlist/**").authenticated()
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // Admin endpoints require ADMIN role
+                        .requestMatchers("/actuator/**").permitAll() // All actuator endpoints without auth
                         .anyRequest().authenticated() // 이외에 인증 필요
+                )
+                .httpBasic(basic -> basic
+                        .realmName("Auto Trading Admin")
+                        .authenticationEntryPoint(jwtAuthEntryPoint)
                 )
                 .exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthEntryPoint)) // 등록
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
