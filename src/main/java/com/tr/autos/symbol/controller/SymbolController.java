@@ -1,5 +1,6 @@
 package com.tr.autos.symbol.controller;
 
+import com.tr.autos.domain.symbol.Symbol;
 import com.tr.autos.domain.symbol.repository.SymbolRepository;
 import com.tr.autos.symbol.dto.SymbolDto;
 import com.tr.autos.symbol.dto.SymbolLiteDto;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,5 +39,14 @@ public class SymbolController {
     public List<SymbolLiteDto> all(@RequestParam String market) {
         return symbolRepository.findAllByMarketOrderByNameAsc(market)
                 .stream().map(SymbolLiteDto::from).toList();
+    }
+
+    // 특정 종목 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<SymbolDto> getById(@PathVariable Long id) {
+        Symbol symbol = symbolRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Symbol not found with id: " + id));
+        SymbolDto dto = new SymbolDto(symbol.getId(), symbol.getTicker(), symbol.getMarket(), symbol.getName());
+        return ResponseEntity.ok(dto);
     }
 }

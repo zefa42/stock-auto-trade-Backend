@@ -53,6 +53,8 @@ public class SecurityConfig {
                         ).permitAll() // 회원가입, 로그인, 종목 검색은 누구나 접근 가능
                         .requestMatchers(HttpMethod.GET,
                                 "/api/symbols/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/stocks/**").permitAll()
                         .requestMatchers("/api/watchlist/**").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN") // Admin endpoints require ADMIN role
                         .requestMatchers("/actuator/**").permitAll() // All actuator endpoints without auth
