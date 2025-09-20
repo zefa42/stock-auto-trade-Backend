@@ -44,4 +44,8 @@ kis:
 
 quotes:
   daily:
-    cron: "0 0 18 * * MON-FRI"
+    cron:
+      morning: "0 0 9 * * MON-FRI"
+      midday: "0 0 12 * * MON-FRI"
+      closing: "0 31 15 * * MON-FRI"
+      afterHours: "0 5 18 * * MON-FRI"
