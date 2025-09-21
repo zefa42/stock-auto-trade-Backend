@@ -56,7 +56,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/api/stocks/**").permitAll()
                         .requestMatchers("/api/watchlist/**").authenticated()
-                        .requestMatchers("/admin/quotes/**").authenticated() // Quote endpoints for authenticated users
+                        .requestMatchers("/admin/quotes/**").hasRole("ADMIN") // Quote admin endpoints require ADMIN role
                         .requestMatchers("/admin/**").hasRole("ADMIN") // Other admin endpoints require ADMIN role
                         .requestMatchers("/actuator/**").permitAll() // All actuator endpoints without auth
                         .anyRequest().authenticated() // 이외에 인증 필요
