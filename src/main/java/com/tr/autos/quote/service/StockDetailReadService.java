@@ -16,13 +16,30 @@ import org.springframework.web.server.ResponseStatusException;
 public class StockDetailReadService {
     private final SymbolRepository symbolRepo;
     private final QuoteCacheJpaRepository quoteRepo;
+    private final OverseasStockDetailService overseasStockDetailService;
+
+    @Transactional(readOnly = true)
+    public StockDetailDto read(Long symbolId) {
+        Symbol symbol = symbolRepo.findById(symbolId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "symbol not found"));
+
+        if ("KRX".equalsIgnoreCase(symbol.getMarket())) {
+            return readDomestic(symbol);
+        }
+
+        return overseasStockDetailService.read(symbol);
+    }
 
     @Transactional(readOnly = true)
     public StockDetailDto readFromCache(Long symbolId) {
-        Symbol s = symbolRepo.findById(symbolId)
+        Symbol symbol = symbolRepo.findById(symbolId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "symbol not found"));
-        QuoteCache q = quoteRepo.findById(symbolId)
+        return readDomestic(symbol);
+    }
+
+    private StockDetailDto readDomestic(Symbol symbol) {
+        QuoteCache quoteCache = quoteRepo.findById(symbol.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "quote not cached yet"));
-        return StockDetailMapper.toDto(s, q);
+        return StockDetailMapper.toDto(symbol, quoteCache);
     }
 }
