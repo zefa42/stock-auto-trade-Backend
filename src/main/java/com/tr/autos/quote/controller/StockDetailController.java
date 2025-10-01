@@ -23,7 +23,7 @@ public class StockDetailController {
 
     @GetMapping("/id/{symbolId}/detail")
     public StockDetailDto detailById(@PathVariable Long symbolId) {
-        return readService.readFromCache(symbolId);
+        return readService.read(symbolId);
     }
 
     @GetMapping("/id/{symbolId}/chart")
