@@ -36,6 +36,7 @@ public class StockChartService {
 
     private final SymbolRepository symbolRepository;
     private final KisMarketDataClient marketDataClient;
+    private final OverseasStockChartService overseasStockChartService;
 
     @Transactional(readOnly = true)
     public StockChartDto getDailyChart(Long symbolId,
@@ -47,7 +48,7 @@ public class StockChartService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "symbol not found"));
 
         if (!"KRX".equalsIgnoreCase(symbol.getMarket())) {
-            throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "국내주식(KRX) 차트만 지원합니다.");
+            return overseasStockChartService.getDailyChart(symbol, requestedFrom, requestedTo, periodCode, useAdjustedPrice);
         }
 
         LocalDate to = requestedTo != null ? requestedTo : LocalDate.now(KST);
