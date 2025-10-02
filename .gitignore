@@ -26,3 +26,9 @@ gradle-app.setting
 # 인텔리제이 설정 업로드 방지
 /.idea
 .idea
+
+# 키 저장된 환경설정 파일
+.env
+
+# IDE/Gradle run output 디렉터리
+bin/
