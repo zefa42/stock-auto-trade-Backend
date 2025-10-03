@@ -5,12 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 public class KisAuthClient {
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
 
     @Value("${kis.base-url}") private String baseUrl;
     @Value("${kis.appkey}")   private String appKey;
@@ -18,37 +21,31 @@ public class KisAuthClient {
 
     /** KIS 액세스 토큰 발급 */
     public KisTokenResponse issueAccessToken() {
-        String url = baseUrl + "/oauth2/tokenP";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        String body = """
-          {
-            "grant_type": "client_credentials",
-            "appkey": "%s",
-            "appsecret": "%s"
-          }
-        """.formatted(appKey, appSecret);
-
-        ResponseEntity<KisTokenResponse> res = restTemplate.exchange(
-                url, HttpMethod.POST, new HttpEntity<>(body, headers), KisTokenResponse.class);
-        return res.getBody();
+        return restClient
+                .post()
+                .uri("/oauth2/tokenP")                   // baseUrl은 RestConfig에서 주입
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of(
+                        "grant_type", "client_credentials",
+                        "appkey", appKey,
+                        "appsecret", appSecret
+                ))
+                .retrieve()
+                .body(KisTokenResponse.class);
     }
 
     /** KIS 액세스 토큰 폐기 */
     public void revokeAccessToken(String accessToken) {
-        String url = baseUrl + "/oauth2/revokeP";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        String body = """
-          {
-            "appkey": "%s",
-            "appsecret": "%s",
-            "token": "%s"
-          }
-        """.formatted(appKey, appSecret, accessToken);
-
-        restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(body, headers), Void.class);
+        restClient
+                .post()
+                .uri("/oauth2/revokeP")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of(
+                        "appkey", appKey,
+                        "appsecret", appSecret,
+                        "token", accessToken
+                ))
+                .retrieve()
+                .toBodilessEntity();                      // 바디 없는 응답
     }
 }
