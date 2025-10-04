@@ -40,7 +40,7 @@ public class OverseasStockDetailService {
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "KIS 해외 시세 응답이 비어 있습니다.");
         }
 
-        long price = parseLongOrZero(output.convertedTodayPrice(), output.last());
+        long price = parseLongOrZero(output.last());
         long prevDiff = parseLongOrZero(output.convertedTodayDiff(), output.convertedPrevDiff());
         Double changeRate = parseDoubleFirst(output.convertedTodayRate(), output.convertedPrevRate());
         int changeSign = determineChangeSign(prevDiff, changeRate, output.convertedTodaySign());
