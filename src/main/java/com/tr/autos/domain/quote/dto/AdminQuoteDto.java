@@ -44,22 +44,17 @@ public record AdminQuoteDto(
     private static String formatTimestamp(Timestamp timestamp) {
         if (timestamp == null) return "N/A";
         
-        // UTC 시간을 한국 시간(UTC+9)으로 변환
-        java.time.ZonedDateTime utcTime = timestamp.toInstant().atZone(java.time.ZoneOffset.UTC);
-        java.time.ZonedDateTime koreaTime = utcTime.withZoneSameInstant(java.time.ZoneId.of("Asia/Seoul"));
-        
-        return koreaTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        // MySQL에 저장된 시간이 이미 한국 시간이므로 그대로 사용
+        return timestamp.toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
     
     private static String formatTimeAgo(Timestamp timestamp) {
         if (timestamp == null) return "N/A";
         
-        // UTC 시간을 한국 시간으로 변환 후 계산
-        java.time.ZonedDateTime utcTime = timestamp.toInstant().atZone(java.time.ZoneOffset.UTC);
-        java.time.ZonedDateTime koreaTime = utcTime.withZoneSameInstant(java.time.ZoneId.of("Asia/Seoul"));
-        
-        java.time.ZonedDateTime now = java.time.ZonedDateTime.now(java.time.ZoneId.of("Asia/Seoul"));
-        java.time.Duration duration = java.time.Duration.between(koreaTime, now);
+        // MySQL에 저장된 시간이 이미 한국 시간이므로 그대로 사용
+        java.time.LocalDateTime storedTime = timestamp.toLocalDateTime();
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        java.time.Duration duration = java.time.Duration.between(storedTime, now);
         
         long days = duration.toDays();
         long hours = duration.toHours() % 24;
