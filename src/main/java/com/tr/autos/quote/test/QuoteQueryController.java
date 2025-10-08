@@ -1,6 +1,7 @@
 package com.tr.autos.quote.test;
 
 import com.tr.autos.domain.quote.QuoteCache;
+import com.tr.autos.domain.quote.dto.AdminQuoteDto;
 import com.tr.autos.domain.quote.repository.QuoteCacheJpaRepository;
 import com.tr.autos.domain.symbol.Symbol;
 import com.tr.autos.domain.symbol.repository.SymbolRepository;
@@ -48,9 +49,17 @@ public class QuoteQueryController {
             Pageable pageable = PageRequest.of(page, limit, Sort.by("updatedAt").descending());
             Page<QuoteCache> quotePage = quoteRepo.findAll(pageable);
             
+            // QuoteCache를 AdminQuoteDto로 변환 (종목 이름 포함)
+            List<AdminQuoteDto> adminQuotes = quotePage.getContent().stream()
+                    .map(quote -> {
+                        Symbol symbol = symbolRepo.findById(quote.getSymbolId()).orElse(null);
+                        return AdminQuoteDto.from(quote, symbol);
+                    })
+                    .toList();
+            
             return ResponseEntity.ok().body(
                     java.util.Map.of(
-                            "quotes", quotePage.getContent(),
+                            "quotes", adminQuotes,
                             "totalElements", quotePage.getTotalElements(),
                             "totalPages", quotePage.getTotalPages(),
                             "currentPage", quotePage.getNumber(),
@@ -82,10 +91,21 @@ public class QuoteQueryController {
             List<Long> ids = symbols.stream().map(Symbol::getId).toList();
             List<QuoteCache> quotes = ids.isEmpty() ? List.of() : quoteRepo.findBySymbolIdIn(ids);
             
+            // QuoteCache를 AdminQuoteDto로 변환 (종목 이름 포함)
+            List<AdminQuoteDto> adminQuotes = quotes.stream()
+                    .map(quote -> {
+                        Symbol symbol = symbols.stream()
+                                .filter(s -> s.getId().equals(quote.getSymbolId()))
+                                .findFirst()
+                                .orElse(null);
+                        return AdminQuoteDto.from(quote, symbol);
+                    })
+                    .toList();
+            
             return ResponseEntity.ok().body(
                     java.util.Map.of(
-                            "quotes", quotes,
-                            "count", quotes.size(),
+                            "quotes", adminQuotes,
+                            "count", adminQuotes.size(),
                             "requestedTickers", tickers,
                             "foundSymbols", symbols.size()
                     )
@@ -103,9 +123,16 @@ public class QuoteQueryController {
     public ResponseEntity<?> getOne(@PathVariable Long symbolId) {
         try {
             log.info("Fetching quote for symbol ID: {}", symbolId);
-            return quoteRepo.findById(symbolId)
-                    .<ResponseEntity<?>>map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.notFound().build());
+            
+            QuoteCache quote = quoteRepo.findById(symbolId).orElse(null);
+            if (quote == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            Symbol symbol = symbolRepo.findById(symbolId).orElse(null);
+            AdminQuoteDto adminQuote = AdminQuoteDto.from(quote, symbol);
+            
+            return ResponseEntity.ok(adminQuote);
         } catch (Exception e) {
             log.error("Failed to fetch quote for symbol ID: {}", symbolId, e);
             return ResponseEntity.internalServerError().body(
