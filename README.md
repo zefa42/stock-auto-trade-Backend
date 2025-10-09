@@ -100,3 +100,51 @@ stock-auto-trade-Backend/
 ├── build.gradle                       # Gradle 빌드 설정
 ├── docker-compose.yml                 # MySQL + Redis 컨테이너
 └── README.md
+
+```
+## 📡 API 엔드포인트
+
+### - 인증 (Authentication)
+
+| Method | Endpoint        | 설명         | 
+| ------ | --------------- | ------------| 
+| POST   | `/auth/signup`  | 회원가입      | 
+| POST   | `/auth/login`   | 로그인       | 
+| POST   | `/auth/logout`  | 로그아웃      | 
+| POST   | `/auth/refresh` | 토큰 갱신     | 
+| GET    | `/auth/me`      | 내 정보 조회  | 
+
+### - 종목 (Symbol)
+
+| Method | Endpoint            | 설명                   | 
+| ------ | ------------------- | --------------------- | 
+| GET    | `/api/symbols`      | 종목 검색 (market, q)   | 
+| GET    | `/api/symbols/{id}` | 종목 상세 조회           | 
+
+### - 관심종목 (Watchlist)
+
+| Method | Endpoint                    | 설명              |
+| ------ | --------------------------- | ---------------- | 
+| GET    | `/api/watchlist`            | 내 관심종목 목록     |
+| POST   | `/api/watchlist`            | 관심종목 추가       | 
+| DELETE | `/api/watchlist/{symbolId}` | 관심종목 삭제       | 
+
+### - 시세 (Stock Data)
+
+| Method | Endpoint                          | 설명                  | 
+| ------ | --------------------------------- | -------------------- | 
+| GET    | `/api/stocks/id/{id}/detail`      | 상세 시세 조회          | 
+| GET    | `/api/stocks/id/{id}/chart/daily` | 일봉 차트 (from, to)   | 
+
+### - 시장 (Market)
+
+| Method | Endpoint                        | 설명                | 
+| ------ | ------------------------------- | ------------------ |
+| GET    | `/api/markets/domestic/ranking` | 국내 시가총액 순위     |
+
+### - 관리자 (Admin)
+
+| Method | Endpoint                | 설명              | 
+| ------ | ----------------------- | ---------------- | 
+| GET    | `/admin/health`         | 시스템 헬스 체크     | 
+| POST   | `/admin/quotes/refresh` | 시세 수동 갱신      | 
