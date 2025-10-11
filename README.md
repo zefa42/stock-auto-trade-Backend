@@ -102,6 +102,11 @@ stock-auto-trade-Backend/
 └── README.md
 
 ```
+## 🧩 ERD 다이어그램
+<img width="708" height="601" alt="image" src="https://github.com/user-attachments/assets/5da6c5a2-0fe8-464a-9643-153d4c0dd84c" />
+
+
+
 ## 📡 API 엔드포인트
 
 ### - 인증 (Authentication)
